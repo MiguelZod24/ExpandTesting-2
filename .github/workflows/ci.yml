@@ -1,0 +1,49 @@
+name: CI - Python Playwright Tests
+
+# Triggers: push, pull_request y cron diario a las 8:00 AM hora España (UTC+1)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * *'  # 8:00 AM hora España (CET/UTC+1)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      # 3. Instalar dependencias
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Instalar navegadores de Playwright
+      - name: Install Playwright browsers
+        run: |
+          python -m playwright install
+
+      # 5. Ejecutar tests con pytest y generar reportes Allure
+      - name: Run tests
+        run: |
+          pytest --alluredir=allure-results -v --maxfail=1 --disable-warnings
+
+      # 6. Guardar reportes Allure como artifact
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-results
+

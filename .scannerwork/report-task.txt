@@ -1,0 +1,6 @@
+projectKey=ExpandTesting_2
+serverUrl=http://localhost:9000
+serverVersion=25.2.0.102705
+dashboardUrl=http://localhost:9000/dashboard?id=ExpandTesting_2
+ceTaskId=a8d4ec0a-bb78-4ae6-9817-cc26f31b5b30
+ceTaskUrl=http://localhost:9000/api/ce/task?id=a8d4ec0a-bb78-4ae6-9817-cc26f31b5b30

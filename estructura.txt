@@ -1,0 +1,44 @@
+Listado de rutas de carpetas para el volumen Acer
+El número de serie del volumen es 2630-5914
+C:.
+|   conftest.py
+|   estructura.txt
+|   README.md
+|   requirements.txt
+|   
++---.github
+|   \---workflows
+|           ci.yml
+|           
++---.pytest_cache
+|   |   .gitignore
+|   |   CACHEDIR.TAG
+|   |   README.md
+|   |   
+|   \---v
+|       \---cache
+|               lastfailed
+|               nodeids
+|               
++---pages
+|   |   login_page.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           login_page.cpython-313.pyc
+|           __init__.cpython-313.pyc
+|           
++---test
+|   |   test_pass_erroneo.py
+|   |   test_usuario_erroneo.py
+|   |   __init__py
+|   |   
+|   \---__pycache__
+|           test_pass_erroneo.cpython-313-pytest-8.4.1.pyc
+|           test_usuario_erroneo.cpython-313-pytest-8.4.1.pyc
+|           
+\---__pycache__
+        conftest.cpython-313-pytest-8.4.1.pyc
+        test_pass_erroneo.cpython-313-pytest-8.4.1.pyc
+        test_usuario_erroneo.cpython-313-pytest-8.4.1.pyc
+        
