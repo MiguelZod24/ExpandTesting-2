@@ -42,8 +42,9 @@ jobs:
 
       # 6. Guardar reportes Allure como artifact
       - name: Upload Allure Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-results
+
 
