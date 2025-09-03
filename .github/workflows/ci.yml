@@ -29,28 +29,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest-html
 
       # 4. Instalar navegadores de Playwright
       - name: Install Playwright browsers
         run: python -m playwright install
 
-      # 5. Ejecutar tests con pytest y generar resultados Allure JSON
-      - name: Run tests
-        run: pytest --alluredir=allure-results -v --maxfail=1 --disable-warnings
+      # 5. Ejecutar tests con pytest y generar HTML
+      - name: Run tests with pytest-html
+        run: pytest -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html
 
-      # 6. Instalar Allure CLI
-      - name: Install Allure CLI
-        run: npm install -g allure-commandline
-
-      # 7. Generar HTML de Allure combinando JSON y estructura
-      - name: Generate Allure HTML report
-        run: allure generate allure-results --clean -o allure-report
-
-      # 8. Subir HTML final como artefacto (listo para abrir)
-      - name: Upload Allure HTML report
+      # 6. Subir HTML como artefacto (listo para abrir en el navegador)
+      - name: Upload Pytest HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-html
-          path: allure-report
+          name: pytest-html
+          path: report.html
+
 
 
