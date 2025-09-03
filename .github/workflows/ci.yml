@@ -1,6 +1,5 @@
 name: CI - Python Playwright Tests
 
-# Triggers: push, pull_request y cron diario a las 8:00 AM hora España (UTC+1)
 on:
   push:
     branches: [ main ]
@@ -35,16 +34,22 @@ jobs:
       - name: Install Playwright browsers
         run: python -m playwright install
 
-      # 5. Ejecutar tests con pytest y generar HTML
+      # 5. Ejecutar tests con pytest-html
       - name: Run tests with pytest-html
         run: pytest -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html
 
-      # 6. Subir HTML como artefacto (listo para abrir en el navegador)
-      - name: Upload Pytest HTML report
+      # 6. Subir el HTML como artifact
+      - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
           name: pytest-html
           path: report.html
 
+      # 7. Subir los screenshots como artifact
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-screenshots
+          path: screenshots/
 
 
