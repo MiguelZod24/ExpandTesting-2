@@ -46,7 +46,3 @@ def pytest_runtest_makereport(item, call):
 def pytest_configure(config):
     global pytest_html
     pytest_html = config.pluginmanager.getplugin("html")
-
-
-
-
