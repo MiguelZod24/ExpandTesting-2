@@ -52,7 +52,7 @@ def _parsear_tests(salida: str) -> list:
     """Extrae la lista de tests con su estado desde la salida de pytest."""
     tests = []
     patron_test = re.compile(
-        r"([\w/\\.\-]+::[\w\[\]-]+)\s+(PASSED|FAILED|ERROR|SKIPPED)",
+        r"([^\s:]+::[^\s]+)\s+(PASSED|FAILED|ERROR|SKIPPED)",
         re.IGNORECASE,
     )
     for linea in salida.splitlines():
