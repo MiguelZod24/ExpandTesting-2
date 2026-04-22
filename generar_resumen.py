@@ -11,7 +11,6 @@ Uso:
 
 import subprocess
 import sys
-import re
 import argparse
 from datetime import datetime
 
@@ -50,24 +49,27 @@ def ejecutar_pytest(objetivo: str) -> str:
 
 def _parsear_tests(salida: str) -> list:
     """Extrae la lista de tests con su estado desde la salida de pytest."""
+    ESTADOS = {"PASSED", "FAILED", "ERROR", "SKIPPED"}
     tests = []
-    patron_test = re.compile(
-        r"([^\s:]+::[^\s]+)\s+(PASSED|FAILED|ERROR|SKIPPED)",
-        re.IGNORECASE,
-    )
     for linea in salida.splitlines():
-        m = patron_test.search(linea)
-        if m:
-            nombre_completo = m.group(1)
-            estado_raw = m.group(2).lower()
-            nombre_fn = nombre_completo.split("::")[-1]
-            nombre_fn = re.sub(r"\[.*?\]$", "", nombre_fn)
-            tests.append({
-                "nombre_completo": nombre_completo,
-                "nombre_fn": nombre_fn,
-                "descripcion": DESCRIPCIONES.get(nombre_fn, nombre_fn.replace("_", " ")),
-                "estado": estado_raw,
-            })
+        partes = linea.split()
+        if len(partes) < 2:
+            continue
+        if partes[1].upper() not in ESTADOS:
+            continue
+        if "::" not in partes[0]:
+            continue
+        nombre_completo = partes[0]
+        estado_raw = partes[1].lower()
+        nombre_fn = nombre_completo.split("::")[-1]
+        if nombre_fn.endswith("]") and "[" in nombre_fn:
+            nombre_fn = nombre_fn[:nombre_fn.rindex("[")]
+        tests.append({
+            "nombre_completo": nombre_completo,
+            "nombre_fn": nombre_fn,
+            "descripcion": DESCRIPCIONES.get(nombre_fn, nombre_fn.replace("_", " ")),
+            "estado": estado_raw,
+        })
     return tests
 
 
@@ -76,18 +78,25 @@ def _parsear_conteos(salida: str) -> tuple:
     conteos = {"passed": 0, "failed": 0, "error": 0, "skipped": 0}
     duracion = "desconocida"
 
-    patron_resumen = re.compile(
-        r"(?:(\d+)\s+failed)?[,\s]*(?:(\d+)\s+passed)?[,\s]*(?:(\d+)\s+error)?[,\s]*"
-        r"(?:(\d+)\s+skipped)?\s+in\s+([\d.]+)s",
-        re.IGNORECASE,
-    )
-    m_res = patron_resumen.search(salida)
-    if m_res:
-        conteos["failed"]  = int(m_res.group(1) or 0)
-        conteos["passed"]  = int(m_res.group(2) or 0)
-        conteos["error"]   = int(m_res.group(3) or 0)
-        conteos["skipped"] = int(m_res.group(4) or 0)
-        duracion = f"{m_res.group(5)} segundos"
+    for linea in salida.splitlines():
+        if " in " not in linea:
+            continue
+        tokens = linea.strip("= ").replace(",", "").split()
+        if not tokens or not tokens[-1].endswith("s"):
+            continue
+        try:
+            float(tokens[-1][:-1])
+        except ValueError:
+            continue
+        if not any(kw in linea.lower() for kw in ("passed", "failed", "error", "skipped")):
+            continue
+        i = 0
+        while i < len(tokens) - 1:
+            if tokens[i].isdigit() and tokens[i + 1].lower() in conteos:
+                conteos[tokens[i + 1].lower()] = int(tokens[i])
+            i += 1
+        duracion = f"{tokens[-1][:-1]} segundos"
+        break
 
     return conteos, duracion
 
