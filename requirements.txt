@@ -4,4 +4,5 @@ pytest-playwright==0.7.0
 allure-pytest==2.15.0
 allure-python-commons==2.15.0
 python-dotenv==1.1.1
+pytest-html==4.1.1
 

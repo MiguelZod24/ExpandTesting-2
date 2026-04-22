@@ -89,7 +89,7 @@ def test_login_usuario_vacio(page):
 # ─────────────────────────────────────────────────────────────────
 # CASO 4: Solo el campo contraseña vacío (el usuario sí está relleno)
 # ─────────────────────────────────────────────────────────────────
-def test_login_password_vacio(page):
+def test_login_clave_vacia(page):
     login_page = LoginPage(page)
 
     # Navegar a la página de login

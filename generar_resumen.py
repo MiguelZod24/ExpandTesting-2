@@ -26,9 +26,9 @@ DESCRIPCIONES = {
     "test_login_exitoso":       "Login exitoso con credenciales válidas",
     "test_login_campos_vacios": "Login con ambos campos vacíos",
     "test_login_usuario_vacio": "Login con el campo usuario vacío",
-    "test_login_password_vacio":"Login con el campo contraseña vacío",
+    "test_login_clave_vacia":   "Login con el campo contraseña vacío",
     "test_usuario_erroneo":     "Login con usuario incorrecto",
-    "test_password_erroneo":    "Login con contraseña incorrecta",
+    "test_clave_erronea":       "Login con contraseña incorrecta",
 }
 
 
@@ -48,20 +48,9 @@ def ejecutar_pytest(objetivo: str) -> str:
     return resultado.stdout + resultado.stderr
 
 
-def parsear_salida(salida: str) -> dict:
-    """
-    Extrae de la salida de pytest:
-      - lista de tests con su estado (passed / failed / error)
-      - conteos totales
-      - duración
-      - fragmentos de error por test fallido
-    """
+def _parsear_tests(salida: str) -> list:
+    """Extrae la lista de tests con su estado desde la salida de pytest."""
     tests = []
-    conteos = {"passed": 0, "failed": 0, "error": 0, "skipped": 0}
-    duracion = "desconocida"
-
-    # ── Líneas de resultado por test ─────────────────────────────────────────
-    # pytest -q imprime:  test/archivo.py::nombre  PASSED/FAILED/ERROR/SKIPPED
     patron_test = re.compile(
         r"([\w/\\.\-]+::[\w\[\]-]+)\s+(PASSED|FAILED|ERROR|SKIPPED)",
         re.IGNORECASE,
@@ -79,9 +68,14 @@ def parsear_salida(salida: str) -> dict:
                 "descripcion": DESCRIPCIONES.get(nombre_fn, nombre_fn.replace("_", " ")),
                 "estado": estado_raw,
             })
+    return tests
 
-    # ── Línea de resumen final ────────────────────────────────────────────────
-    # Ejemplo: "6 passed in 38.12s"  o  "2 failed, 4 passed in 40.01s"
+
+def _parsear_conteos(salida: str) -> tuple:
+    """Extrae conteos totales y duración desde la línea de resumen de pytest."""
+    conteos = {"passed": 0, "failed": 0, "error": 0, "skipped": 0}
+    duracion = "desconocida"
+
     patron_resumen = re.compile(
         r"(?:(\d+)\s+failed)?[,\s]*(?:(\d+)\s+passed)?[,\s]*(?:(\d+)\s+error)?[,\s]*"
         r"(?:(\d+)\s+skipped)?\s+in\s+([\d.]+)s",
@@ -95,37 +89,97 @@ def parsear_salida(salida: str) -> dict:
         conteos["skipped"] = int(m_res.group(4) or 0)
         duracion = f"{m_res.group(5)} segundos"
 
-    # Si pytest -q no imprimió líneas PASSED/FAILED, reconstruir desde conteos
-    if not tests and any(conteos.values()):
-        # No tenemos detalle por test; al menos reflejamos los totales
-        pass
+    return conteos, duracion
 
-    # ── Bloques de error (--tb=short) ─────────────────────────────────────────
-    # Asociar cada bloque FAILED a su test para incluir el mensaje clave
+
+def _parsear_errores(salida: str, tests: list) -> None:
+    """Asocia fragmentos de error a cada test fallido (modifica tests in-place)."""
     errores = {}
     bloque_actual = None
     for linea in salida.splitlines():
         if linea.startswith("FAILED "):
             bloque_actual = linea.replace("FAILED ", "").split(" - ")[0].strip()
             errores.setdefault(bloque_actual, [])
-        elif linea.startswith("_ ") or linea.startswith("E "):
-            if bloque_actual:
-                errores[bloque_actual].append(linea.strip())
+        elif (linea.startswith("_ ") or linea.startswith("E ")) and bloque_actual:
+            errores[bloque_actual].append(linea.strip())
+
     for t in tests:
         clave = t["nombre_completo"]
-        if clave in errores:
-            t["error_detalle"] = " | ".join(errores[clave][:2])
-        else:
-            t["error_detalle"] = ""
+        t["error_detalle"] = " | ".join(errores[clave][:2]) if clave in errores else ""
+
+
+def parsear_salida(salida: str) -> dict:
+    """
+    Extrae de la salida de pytest:
+      - lista de tests con su estado (passed / failed / error)
+      - conteos totales
+      - duración
+      - fragmentos de error por test fallido
+    """
+    tests = _parsear_tests(salida)
+    conteos, duracion = _parsear_conteos(salida)
+    _parsear_errores(salida, tests)
 
     conteos["total"] = sum(conteos.values())
     return {"tests": tests, "conteos": conteos, "duracion": duracion}
 
 
-def generar_resumen(datos: dict, salida_raw: str) -> str:
+def _seccion_tests_ok(tests_ok: list) -> list:
+    """Devuelve las líneas del bloque 'tests que pasaron'."""
+    if not tests_ok:
+        return []
+    lineas = ["TESTS QUE PASARON", "-" * 40]
+    for t in tests_ok:
+        lineas.append(f"  [OK]  {t['descripcion']}")
+    lineas.append("")
+    return lineas
+
+
+def _seccion_tests_mal(tests_mal: list) -> list:
+    """Devuelve las líneas del bloque 'tests que fallaron'."""
+    if not tests_mal:
+        return []
+    lineas = ["TESTS QUE FALLARON", "-" * 40]
+    for t in tests_mal:
+        lineas.append(f"  [FAIL]  {t['descripcion']}")
+        if t.get("error_detalle"):
+            lineas.append(f"     → {t['error_detalle'][:120]}")
+    lineas.append("")
+    return lineas
+
+
+def _seccion_tests_skip(tests_skip: list) -> list:
+    """Devuelve las líneas del bloque 'tests omitidos'."""
+    if not tests_skip:
+        return []
+    lineas = ["TESTS OMITIDOS", "-" * 40]
+    for t in tests_skip:
+        lineas.append(f"  [SKIP]  {t['descripcion']}")
+    lineas.append("")
+    return lineas
+
+
+def _seccion_conclusion(fallaron: int, total: int) -> list:
+    """Devuelve las líneas del bloque 'conclusión'."""
+    lineas = ["CONCLUSIÓN", "-" * 40]
+    if fallaron == 0:
+        lineas.append(
+            f"Todos los {total} tests pasaron. La funcionalidad de login\n"
+            "responde correctamente en todos los escenarios validados."
+        )
+    else:
+        plural = "test" if fallaron == 1 else "tests"
+        lineas.append(
+            f"{fallaron} {plural} fallaron. Revisar los casos indicados\n"
+            "arriba antes de continuar con el despliegue."
+        )
+    return lineas
+
+
+def generar_resumen(datos: dict) -> str:
     c = datos["conteos"]
-    total   = c["total"]
-    pasaron = c["passed"]
+    total    = c["total"]
+    pasaron  = c["passed"]
     fallaron = c["failed"] + c["error"]
     omitidos = c["skipped"]
     porcentaje = round(pasaron / total * 100) if total else 0
@@ -146,7 +200,6 @@ def generar_resumen(datos: dict, salida_raw: str) -> str:
         "",
     ]
 
-    # ── Párrafo introductorio ─────────────────────────────────────────────────
     if total == 0:
         lineas += [
             "No se encontraron tests. Verifica que pytest esté instalado",
@@ -163,7 +216,7 @@ def generar_resumen(datos: dict, salida_raw: str) -> str:
     elif pasaron == 0:
         estado_suite = "Todos los tests fallaron. Revisión urgente necesaria."
     else:
-        estado_suite = f"La suite tiene fallos que deben resolverse antes de entregar."
+        estado_suite = "La suite tiene fallos que deben resolverse antes de entregar."
 
     lineas += [
         "RESULTADO GLOBAL",
@@ -178,30 +231,10 @@ def generar_resumen(datos: dict, salida_raw: str) -> str:
         "",
     ]
 
-    # ── Tests que pasaron ─────────────────────────────────────────────────────
-    if tests_ok:
-        lineas += ["TESTS QUE PASARON", "-" * 40]
-        for t in tests_ok:
-            lineas.append(f"  [OK]  {t['descripcion']}")
-        lineas.append("")
+    lineas += _seccion_tests_ok(tests_ok)
+    lineas += _seccion_tests_mal(tests_mal)
+    lineas += _seccion_tests_skip(tests_skip)
 
-    # ── Tests que fallaron ────────────────────────────────────────────────────
-    if tests_mal:
-        lineas += ["TESTS QUE FALLARON", "-" * 40]
-        for t in tests_mal:
-            lineas.append(f"  [FAIL]  {t['descripcion']}")
-            if t.get("error_detalle"):
-                lineas.append(f"     → {t['error_detalle'][:120]}")
-        lineas.append("")
-
-    # ── Tests omitidos ────────────────────────────────────────────────────────
-    if tests_skip:
-        lineas += ["TESTS OMITIDOS", "-" * 40]
-        for t in tests_skip:
-            lineas.append(f"  [SKIP]  {t['descripcion']}")
-        lineas.append("")
-
-    # ── Cobertura ─────────────────────────────────────────────────────────────
     lineas += [
         "QUÉ CUBRE ESTA SUITE",
         "-" * 40,
@@ -219,19 +252,7 @@ def generar_resumen(datos: dict, salida_raw: str) -> str:
         "",
     ]
 
-    # ── Conclusión ────────────────────────────────────────────────────────────
-    lineas += ["CONCLUSIÓN", "-" * 40]
-    if fallaron == 0:
-        lineas.append(
-            f"Todos los {total} tests pasaron. La funcionalidad de login\n"
-            "responde correctamente en todos los escenarios validados."
-        )
-    else:
-        plural = "test" if fallaron == 1 else "tests"
-        lineas.append(
-            f"{fallaron} {plural} fallaron. Revisar los casos indicados\n"
-            "arriba antes de continuar con el despliegue."
-        )
+    lineas += _seccion_conclusion(fallaron, total)
     lineas += ["", sep]
 
     return "\n".join(lineas)
@@ -258,7 +279,7 @@ def main():
     salida_raw = ejecutar_pytest(args.archivo)
 
     datos = parsear_salida(salida_raw)
-    resumen = generar_resumen(datos, salida_raw)
+    resumen = generar_resumen(datos)
 
     print(resumen)
 

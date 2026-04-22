@@ -1,6 +1,6 @@
 from pages.login_page import LoginPage
 
-def test_password_erroneo(page):
+def test_clave_erronea(page):
     login_page = LoginPage(page)
 
     login_page.navegar()
