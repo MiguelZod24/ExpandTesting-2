@@ -1,5 +1,12 @@
 from pages.login_page import LoginPage
+import allure
 
+@allure.feature("Autenticación")
+@allure.story("Credenciales Inválidas")
+@allure.title("Login con usuario incorrecto")
+@allure.description("Verifica el comportamiento cuando se ingresa un usuario incorrecto con contraseña válida")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.tag("security", "negative")
 def test_usuario_erroneo(page):
     login_page = LoginPage(page)
 

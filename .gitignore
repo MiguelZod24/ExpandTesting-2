@@ -8,6 +8,8 @@ __pycache__/
 # Reportes y caches de pytest / Allure
 .pytest_cache/
 allure-results/
+allure-report/
+test_artifacts/
 
 # Variables de entorno
 .env
