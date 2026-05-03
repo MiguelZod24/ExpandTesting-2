@@ -5,6 +5,9 @@ import os
 from datetime import datetime
 import glob
 
+# TestDino: baseURL en config - Golden Rule #5
+BASE_URL = os.getenv("BASE_URL", "https://practice.expandtesting.com")
+
 # Fixture de Playwright para abrir/cerrar navegador
 @pytest.fixture(scope="function")
 def page():
@@ -26,7 +29,9 @@ def page():
             args=["--disable-web-security"]
         )
         
+        # TestDino: baseURL en config - Golden Rule #5
         context = browser.new_context(
+            base_url=BASE_URL,
             record_video_dir=videos_dir,
             record_video_size={"width": 1280, "height": 720}
         )

@@ -1,0 +1,41 @@
+==============================================================
+  RESUMEN EJECUTIVO DE EJECUCIÓN DE TESTS
+==============================================================
+  Fecha:    21/04/2026 14:27
+  Duración: 34.93 segundos
+==============================================================
+
+RESULTADO GLOBAL
+----------------------------------------
+Se ejecutaron 6 tests: 6 pasaron (100 %), 0 fallaron.
+La suite completa pasó sin ningún fallo.
+
+TESTS QUE PASARON
+----------------------------------------
+  [OK]  Login exitoso con credenciales válidas
+  [OK]  Login con ambos campos vacíos
+  [OK]  Login con el campo usuario vacío
+  [OK]  Login con el campo contraseña vacío
+  [OK]  Login con contraseña incorrecta
+  [OK]  Login con usuario incorrecto
+
+QUÉ CUBRE ESTA SUITE
+----------------------------------------
+Tests end-to-end del formulario de login de practice.expandtesting.com:
+
+  • Acceso exitoso con credenciales válidas.
+  • Intento de login con usuario incorrecto.
+  • Intento de login con contraseña incorrecta.
+  • Envío del formulario con ambos campos vacíos.
+  • Envío del formulario solo con usuario vacío.
+  • Envío del formulario solo con contraseña vacía.
+
+Cada test valida: estado inicial de los campos, atributos HTML
+y el mensaje de error mostrado por la aplicación.
+
+CONCLUSIÓN
+----------------------------------------
+Todos los 6 tests pasaron. La funcionalidad de login
+responde correctamente en todos los escenarios validados.
+
+==============================================================
