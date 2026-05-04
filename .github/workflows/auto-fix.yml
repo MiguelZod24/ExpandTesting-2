@@ -1,0 +1,215 @@
+# ============================================================
+# auto-fix.yml
+# Se dispara automáticamente cuando ci.yml falla.
+# Usa GitHub Models para analizar el fallo y abrir un PR
+# con el fix sugerido, respetando las convenciones del proyecto.
+# ============================================================
+
+name: Auto Fix con GitHub Models
+
+on:
+  # Revisa cada 5 minutos si hay fallos en CI
+  schedule:
+    - cron: '*/5 * * * *'  # Cada 5 minutos
+  # También permite ejecución manual
+  workflow_dispatch:
+
+jobs:
+  analizar-y-proponer-fix:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write        # Para hacer commits
+      pull-requests: write   # Para abrir PRs
+      actions: read          # Para leer logs del fallo
+
+    steps:
+      # 1. Descarga el código del repo
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      # 2. Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # 3. Buscar fallos recientes en CI y obtener logs
+      - name: Buscar fallos recientes en CI
+        id: buscar_fallos
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "Buscando fallos recientes en el workflow CI..."
+          
+          # Obtiene los últimos runs del workflow CI
+          RUNS_JSON=$(gh run list --workflow="CI - Python Playwright Tests" --limit 10 --json databaseId,conclusion,createdAt,status)
+          
+          # Busca el primer run fallido
+          FAILED_RUN_ID=$(echo "$RUNS_JSON" | python3 -c "import json, sys; data = json.load(sys.stdin); [print(run['databaseId']) for run in data if run['conclusion'] == 'failure'][0] if any(run['conclusion'] == 'failure' for run in data) else None")
+          
+          if [ -z "$FAILED_RUN_ID" ]; then
+            echo "No se encontraron fallos recientes. Saliendo."
+            echo "NO_FAILURES=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "Run fallido encontrado: $FAILED_RUN_ID"
+          echo "FAILED_RUN_ID=$FAILED_RUN_ID" >> $GITHUB_OUTPUT
+          
+          # Descarga los logs completos del run fallido
+          gh run view $FAILED_RUN_ID --log > logs_fallo.txt 2>&1
+          
+          echo "Logs del fallo:"
+          head -50 logs_fallo.txt
+
+      # 3. Lee las skills relevantes para inyectarlas como contexto
+      - name: Cargar skills como contexto
+        id: cargar_skills
+        run: |
+          # Lee las skills más relevantes para análisis de fallos
+          SKILL_PLAYWRIGHT=""
+          SKILL_BEST_PRACTICES=""
+          
+          # Intenta leer skill de playwright
+          if [ -f ".agents/skills/playwright-py-skill/lib/playwright_python.md" ]; then
+            SKILL_PLAYWRIGHT=$(cat .agents/skills/playwright-py-skill/lib/*.md 2>/dev/null | head -200)
+          fi
+          
+          # Intenta leer skill de buenas prácticas
+          if [ -d ".agents/skills/playwright-best-practices/core" ]; then
+            SKILL_BEST_PRACTICES=$(cat .agents/skills/playwright-best-practices/core/*.md 2>/dev/null | head -200)
+          fi
+          
+          # Guarda en archivo para el siguiente paso
+          echo "$SKILL_PLAYWRIGHT" > skill_playwright.txt
+          echo "$SKILL_BEST_PRACTICES" > skill_best_practices.txt
+          
+          echo "Skills cargadas correctamente"
+
+      # 4. Llama a GitHub Models para analizar el fallo y proponer fix
+      - name: Analizar fallo con GitHub Models
+        id: analizar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          # Lee los archivos de contexto
+          LOGS=$(cat logs_fallo.txt | head -300)
+          SKILL_PW=$(cat skill_playwright.txt)
+          SKILL_BP=$(cat skill_best_practices.txt)
+          
+          # Lee los archivos del proyecto para dar contexto al modelo
+          LOGIN_PAGE=$(cat pages/login_page.py 2>/dev/null || echo "No encontrado")
+          CONFTEST=$(cat conftest.py 2>/dev/null || echo "No encontrado")
+          TESTS=$(find test/ -name "*.py" -exec cat {} \; 2>/dev/null || echo "No encontrado")
+          
+          # Construye el prompt con todo el contexto
+          PROMPT="Eres un experto QA Automation en Python y Playwright.
+          
+          REGLAS DEL PROYECTO (obligatorias):
+          - Usa siempre Page Object Model (POM)
+          - Métodos, variables y comentarios en español
+          - Selectores CSS solo en la clase LoginPage, nunca en los tests
+          - Cada test debe ser independiente
+          - Nunca hardcodear selectores fuera del Page Object
+          
+          BUENAS PRÁCTICAS PLAYWRIGHT:
+          $SKILL_BP
+          
+          SKILL PLAYWRIGHT PYTHON:
+          $SKILL_PW
+          
+          ARCHIVO pages/login_page.py:
+          $LOGIN_PAGE
+          
+          ARCHIVO conftest.py:
+          $CONFTEST
+          
+          TESTS ACTUALES:
+          $TESTS
+          
+          LOGS DEL FALLO:
+          $LOGS
+          
+          TAREA:
+          1. Analiza el fallo y explica en español qué lo causó
+          2. Indica exactamente qué archivo y línea tiene el problema
+          3. Propón el código corregido completo del archivo afectado
+          4. Explica por qué tu fix es correcto
+          
+          Responde en español. Sé preciso y concreto."
+          
+          # Llama a GitHub Models (gpt-4o es el modelo disponible gratis)
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://models.inference.ai.azure.com/chat/completions" \
+            -d "{
+              \"model\": \"gpt-4o\",
+              \"messages\": [
+                {
+                  \"role\": \"user\",
+                  \"content\": $(echo "$PROMPT" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+                }
+              ],
+              \"max_tokens\": 4000
+            }")
+          
+          # Extrae el texto de la respuesta
+          ANALISIS=$(echo "$RESPONSE" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          print(data['choices'][0]['message']['content'])
+          " 2>/dev/null || echo "Error al procesar respuesta del modelo")
+          
+          # Guarda el análisis
+          echo "$ANALISIS" > analisis_fallo.txt
+          echo "Análisis completado"
+          cat analisis_fallo.txt
+
+      # 5. Crea una rama nueva y abre el PR con el análisis
+      - name: Crear rama y abrir PR
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          # Configura git
+          git config user.name "GitHub Models AutoFix"
+          git config user.email "autofix@github-models.com"
+          
+          # Crea rama con timestamp para que sea única
+          RAMA="autofix/fallo-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $RAMA
+          
+          # Agrega el análisis como archivo de referencia
+          cp analisis_fallo.txt diagnostico_autofix.md
+          git add diagnostico_autofix.md
+          
+          # Commit con el diagnóstico
+          git commit -m "fix: diagnóstico automático de fallo en CI
+
+          Análisis generado por GitHub Models.
+          Run fallido: ${{ steps.buscar_fallos.outputs.FAILED_RUN_ID }}
+          Revisar diagnostico_autofix.md para ver el fix sugerido."
+          
+          # Push de la rama
+          git push origin $RAMA
+          
+          # Abre el PR automáticamente
+          gh pr create \
+            --title "🤖 AutoFix: Fallo detectado en CI - $(date +%Y-%m-%d)" \
+            --body "## Fallo detectado automáticamente
+            
+          **Run fallido:** ${{ steps.buscar_fallos.outputs.FAILED_RUN_ID }}
+          **Workflow:** CI - Python Playwright Tests
+          
+          ## Análisis de GitHub Models
+          
+          $(cat analisis_fallo.txt)
+          
+          ---
+          *PR generado automáticamente. Revisar y aprobar antes de hacer merge.*" \
+            --base main \
+            --head $RAMA
