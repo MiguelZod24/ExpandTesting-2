@@ -1,0 +1,1 @@
+Error en llamada a GitHub Models. HTTP Status: 413. Response: {"error":{"code":"tokens_limit_reached","message":"Request body too large for gpt-4o model. Max size: 8000 tokens.","details":"Request body too large for gpt-4o model. Max size: 8000 tokens."}}
