@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "framework-core": {
+      "source": "upex-galaxy/agentic-qa-boilerplate",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/framework-core/SKILL.md",
+      "computedHash": "02891c80e7494602f1a960633290d117d5425e2943af620b8736b592254da9e8"
+    },
+    "playwright": {
+      "source": "oakoss/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/playwright/SKILL.md",
+      "computedHash": "179b5f5fbdac8388b6992baa8211fa50b87d02f207175e3ff7c1869999867423"
+    },
+    "playwright-best-practices": {
+      "source": "currents-dev/playwright-best-practices-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "6db654e753257e642d6507d59b4fc633a2382e93429748ba0fb6817c23ef5216"
+    },
+    "playwright-cli": {
+      "source": "upex-galaxy/agentic-qa-boilerplate",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-cli/SKILL.md",
+      "computedHash": "bfa10d095c1c48964bf9394357094cf47d27ff0d4af942bc0b1de405e64b26de"
+    },
+    "playwright-dev": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-dev/SKILL.md",
+      "computedHash": "d3080bd1dfea90faff860319913a8b527b35b238d1073fb214e43003c4e95826"
+    },
+    "playwright-py-skill": {
+      "source": "akaihola/playwright-py-skill",
+      "sourceType": "github",
+      "skillPath": "skills/playwright-py-skill/SKILL.md",
+      "computedHash": "5366da630cb964b9cb33fd8ce1f6cc70c558b96dfaf5d41f76f61b72b404d5be"
+    },
+    "playwright-skill": {
+      "source": "testdino-hq/playwright-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9471ee4899bc4b019ebf7bcf2c34c3a54c1495cedebc5415d11cd9503ebf1c17"
+    },
+    "project-discovery": {
+      "source": "upex-galaxy/agentic-qa-boilerplate",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/project-discovery/SKILL.md",
+      "computedHash": "f34bc6d381df39047f9b3941966ee26ec30c0f2910acdd925ae6b44b6b1ad4de"
+    },
+    "test-automation": {
+      "source": "upex-galaxy/agentic-qa-boilerplate",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/test-automation/SKILL.md",
+      "computedHash": "db10e682ed8281651bf394cb10e94f5bdb7be61bbd17f9450a000a1dce08f940"
+    }
+  }
+}
