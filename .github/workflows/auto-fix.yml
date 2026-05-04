@@ -25,6 +25,7 @@ jobs:
       contents: write        # Para hacer commits
       pull-requests: write   # Para abrir PRs
       actions: read          # Para leer logs del fallo
+      models: read           # Para acceder a GitHub Models
 
     steps:
       # 1. Descarga el código del repo
