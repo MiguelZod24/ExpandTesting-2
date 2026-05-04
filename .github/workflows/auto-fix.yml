@@ -151,21 +151,7 @@ jobs:
           
           # Extrae el texto de la respuesta JSON
           if [ "$HTTP_STATUS" = "200" ]; then
-            cat << 'EOF' > /tmp/procesar_respuesta.py
-import json, sys
-try:
-    data = json.load(sys.stdin)
-    content = data['choices'][0]['message']['content']
-    clean = content.replace('```json', '').replace('```', '').strip()
-    parsed = json.loads(clean)
-    print(f"Diagnóstico: {parsed.get('diagnostico', 'No disponible')}")
-    print(f"Archivo: {parsed.get('archivo', 'No disponible')}")
-    with open('codigo_corregido.py', 'w') as f:
-        f.write(parsed.get('codigo_completo_corregido', ''))
-except Exception as e:
-    print(f"Error procesando respuesta: {e}")
-EOF
-            ANALISIS=$(echo "$RESPONSE" | python3 /tmp/procesar_respuesta.py)
+            ANALISIS=$(echo "$RESPONSE" | python3 scripts/procesar_respuesta.py)
           else
             ANALISIS="Error en llamada a GitHub Models. HTTP Status: $HTTP_STATUS. Response: $RESPONSE"
           fi
