@@ -1,11 +1,29 @@
 {
   "version": 1,
   "skills": {
+    "ci-cd-and-automation": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ci-cd-and-automation/SKILL.md",
+      "computedHash": "f927700883a2b0f47d150d6ba27faf9006046641404480167d0b860564d11176"
+    },
+    "code-change-verification": {
+      "source": "openai/openai-agents-python",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/code-change-verification/SKILL.md",
+      "computedHash": "1f2b43499764b55f9312287dd69fec4e0a52fa0b785a6b342b1e8c243f7780c4"
+    },
     "framework-core": {
       "source": "upex-galaxy/agentic-qa-boilerplate",
       "sourceType": "github",
       "skillPath": ".claude/skills/framework-core/SKILL.md",
       "computedHash": "02891c80e7494602f1a960633290d117d5425e2943af620b8736b592254da9e8"
+    },
+    "lint-and-validate": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "skillPath": "cli-tool/components/skills/development/lint-and-validate/SKILL.md",
+      "computedHash": "a5116393fae75b4d5c088696996126d9b97cf8ab4443f40a6d1074089df0110d"
     },
     "playwright": {
       "source": "oakoss/agent-skills",
@@ -49,11 +67,29 @@
       "skillPath": ".claude/skills/project-discovery/SKILL.md",
       "computedHash": "f34bc6d381df39047f9b3941966ee26ec30c0f2910acdd925ae6b44b6b1ad4de"
     },
+    "security-review": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/security-review/SKILL.md",
+      "computedHash": "ea603d81b60a1d14d19e33895a33a540837a0470e33105c1024557937ac01704"
+    },
     "test-automation": {
       "source": "upex-galaxy/agentic-qa-boilerplate",
       "sourceType": "github",
       "skillPath": ".claude/skills/test-automation/SKILL.md",
       "computedHash": "db10e682ed8281651bf394cb10e94f5bdb7be61bbd17f9450a000a1dce08f940"
+    },
+    "test-data-generation": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "skillPath": "skills/test-data-generation/SKILL.md",
+      "computedHash": "268dde9ce7ae2e6f97a87ebb95fcfe40b8f6a8dd6abf3170b8703fefca243445"
+    },
+    "test-data-management": {
+      "source": "proffesor-for-testing/agentic-qe",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/test-data-management/SKILL.md",
+      "computedHash": "132768f8868cbf5435a5cf14bf1940df55ffae33ca7f6362861bb634bc463b0e"
     }
   }
 }
