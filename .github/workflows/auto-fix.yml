@@ -102,7 +102,7 @@ jobs:
       - name: Analizar fallo con GitHub Models
         id: analizar
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Lee los archivos de contexto
           LOGS=$(cat logs_fallo.txt | head -300)
@@ -151,7 +151,7 @@ jobs:
           Responde en español. Sé preciso y concreto."
           
           # Llama a GitHub Models (gpt-4o es el modelo disponible gratis)
-          RESPONSE=$(curl -s -X POST \
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/json" \
             "https://models.inference.ai.azure.com/chat/completions" \
@@ -166,12 +166,22 @@ jobs:
               \"max_tokens\": 4000
             }")
           
+          RESPONSE=$(cat response.json)
+          
+          # Diagnóstico de la llamada
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Response completa: $RESPONSE"
+          
           # Extrae el texto de la respuesta
-          ANALISIS=$(echo "$RESPONSE" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          print(data['choices'][0]['message']['content'])
-          " 2>/dev/null || echo "Error al procesar respuesta del modelo")
+          if [ "$HTTP_STATUS" = "200" ]; then
+            ANALISIS=$(echo "$RESPONSE" | python3 -c "
+            import json, sys
+            data = json.load(sys.stdin)
+            print(data['choices'][0]['message']['content'])
+            " 2>/dev/null || echo "Error al procesar respuesta JSON válida")
+          else
+            ANALISIS="Error en llamada a GitHub Models. HTTP Status: $HTTP_STATUS. Response: $RESPONSE"
+          fi
           
           # Guarda el análisis
           echo "$ANALISIS" > analisis_fallo.txt
