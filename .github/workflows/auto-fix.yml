@@ -45,11 +45,20 @@ jobs:
         run: |
           echo "Buscando fallos recientes en el workflow CI..."
           
-          # Obtiene los últimos runs del workflow CI
-          RUNS_JSON=$(gh run list --workflow="CI - Python Playwright Tests" --limit 10 --json databaseId,conclusion,createdAt,status)
+          # Debug: muestra todos los workflows disponibles
+          echo "Workflows disponibles:"
+          gh workflow list --json name,id
           
-          # Busca el primer run fallido
-          FAILED_RUN_ID=$(echo "$RUNS_JSON" | python3 -c "import json, sys; data = json.load(sys.stdin); [print(run['databaseId']) for run in data if run['conclusion'] == 'failure'][0] if any(run['conclusion'] == 'failure' for run in data) else None")
+          # Obtiene los últimos runs del workflow CI (método más robusto)
+          RUNS_JSON=$(gh run list --workflow="ci.yml" --limit 10 --json databaseId,conclusion,createdAt,status 2>/dev/null || \
+                      gh run list --workflow="CI - Python Playwright Tests" --limit 10 --json databaseId,conclusion,createdAt,status 2>/dev/null || \
+                      gh run list --limit 10 --json databaseId,conclusion,createdAt,status)
+          
+          echo "Runs JSON recibido:"
+          echo "$RUNS_JSON"
+          
+          # Busca el primer run fallido (método más simple y robusto)
+          FAILED_RUN_ID=$(echo "$RUNS_JSON" | python3 -c "import json, sys; data=json.load(sys.stdin); failed_runs=[run['databaseId'] for run in data if run.get('conclusion') == 'failure']; print(failed_runs[0] if failed_runs else '')")
           
           if [ -z "$FAILED_RUN_ID" ]; then
             echo "No se encontraron fallos recientes. Saliendo."
