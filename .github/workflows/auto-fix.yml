@@ -17,8 +17,8 @@ on:
 
 jobs:
   analizar-y-proponer-fix:
-    # Solo ejecutar si el workflow CI falló
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    # Solo ejecutar si el workflow CI falló Y es solo en la rama main (evitar ciclos)
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     permissions:
