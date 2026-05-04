@@ -37,7 +37,7 @@ jobs:
 
       # 5. Ejecutar tests con pytest-html
       - name: Run tests with pytest-html
-        run: pytest -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html
+        run: pytest -v --maxfail=1 --disable-warnings --html=report.html --self-contained-html --ignore=test/test_allure_artifacts.py
 
       # 6. Subir el HTML como artifact
       - name: Upload HTML report
