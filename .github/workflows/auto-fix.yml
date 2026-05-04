@@ -105,51 +105,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Lee los archivos de contexto
-          LOGS=$(cat logs_fallo.txt | head -300)
-          SKILL_PW=$(cat skill_playwright.txt)
-          SKILL_BP=$(cat skill_best_practices.txt)
+          # Lee los archivos de contexto reducidos
+          LOGS=$(tail -50 logs_fallo.txt)
+          LOGIN_PAGE=$(head -100 pages/login_page.py 2>/dev/null || echo "No encontrado")
           
-          # Lee los archivos del proyecto para dar contexto al modelo
-          LOGIN_PAGE=$(cat pages/login_page.py 2>/dev/null || echo "No encontrado")
-          CONFTEST=$(cat conftest.py 2>/dev/null || echo "No encontrado")
-          TESTS=$(find test/ -name "*.py" -exec cat {} \; 2>/dev/null || echo "No encontrado")
+          # Construye el prompt reducido
+          PROMPT="Eres experto QA con Python y Playwright.
           
-          # Construye el prompt con todo el contexto
-          PROMPT="Eres un experto QA Automation en Python y Playwright.
-          
-          REGLAS DEL PROYECTO (obligatorias):
-          - Usa siempre Page Object Model (POM)
-          - Métodos, variables y comentarios en español
-          - Selectores CSS solo en la clase LoginPage, nunca en los tests
-          - Cada test debe ser independiente
-          - Nunca hardcodear selectores fuera del Page Object
-          
-          BUENAS PRÁCTICAS PLAYWRIGHT:
-          $SKILL_BP
-          
-          SKILL PLAYWRIGHT PYTHON:
-          $SKILL_PW
+          REGLAS: POM siempre, código en español, selectores solo en LoginPage.
           
           ARCHIVO pages/login_page.py:
           $LOGIN_PAGE
           
-          ARCHIVO conftest.py:
-          $CONFTEST
-          
-          TESTS ACTUALES:
-          $TESTS
-          
-          LOGS DEL FALLO:
+          ERROR DEL TEST:
           $LOGS
           
-          TAREA:
-          1. Analiza el fallo y explica en español qué lo causó
-          2. Indica exactamente qué archivo y línea tiene el problema
-          3. Propón el código corregido completo del archivo afectado
-          4. Explica por qué tu fix es correcto
-          
-          Responde en español. Sé preciso y concreto."
+          Responde SOLO con JSON válido sin markdown:
+          {
+            'archivo': 'pages/login_page.py',
+            'codigo_completo_corregido': '...',
+            'diagnostico': '...'
+          }"
           
           # Llama a GitHub Models (gpt-4o es el modelo disponible gratis)
           HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" -X POST \
@@ -173,13 +149,24 @@ jobs:
           echo "HTTP Status: $HTTP_STATUS"
           echo "Response completa: $RESPONSE"
           
-          # Extrae el texto de la respuesta
+          # Extrae el texto de la respuesta JSON
           if [ "$HTTP_STATUS" = "200" ]; then
             ANALISIS=$(echo "$RESPONSE" | python3 -c "
             import json, sys
-            data = json.load(sys.stdin)
-            print(data['choices'][0]['message']['content'])
-            " 2>/dev/null || echo "Error al procesar respuesta JSON válida")
+            try:
+                data = json.load(sys.stdin)
+                content = data['choices'][0]['message']['content']
+                # Intenta parsear como JSON para formatear mejor
+                try:
+                    parsed = json.loads(content)
+                    print(f\"Diagnóstico: {parsed.get('diagnostico', 'No disponible')}\")
+                    print(f\"Archivo: {parsed.get('archivo', 'No disponible')}\")
+                    print(f\"Código corregido:\n{parsed.get('codigo_completo_corregido', 'No disponible')}\")
+                except:
+                    print(content)
+            except Exception as e:
+                print(f\"Error procesando respuesta: {e}\")
+            ")
           else
             ANALISIS="Error en llamada a GitHub Models. HTTP Status: $HTTP_STATUS. Response: $RESPONSE"
           fi
