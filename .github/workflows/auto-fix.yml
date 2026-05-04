@@ -8,14 +8,17 @@
 name: Auto Fix con GitHub Models
 
 on:
-  # Revisa cada 5 minutos si hay fallos en CI
-  schedule:
-    - cron: '*/5 * * * *'  # Cada 5 minutos
+  # Se dispara cuando ci.yml termina (exitoso o fallido)
+  workflow_run:
+    workflows: ["CI - Python Playwright Tests"]
+    types: [completed]
   # También permite ejecución manual
   workflow_dispatch:
 
 jobs:
   analizar-y-proponer-fix:
+    # Solo ejecutar si el workflow CI falló
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -49,16 +52,12 @@ jobs:
           echo "Workflows disponibles:"
           gh workflow list --json name,id
           
-          # Obtiene los últimos runs del workflow CI (método más robusto)
-          RUNS_JSON=$(gh run list --workflow="ci.yml" --limit 10 --json databaseId,conclusion,createdAt,status 2>/dev/null || \
-                      gh run list --workflow="CI - Python Playwright Tests" --limit 10 --json databaseId,conclusion,createdAt,status 2>/dev/null || \
-                      gh run list --limit 10 --json databaseId,conclusion,createdAt,status)
+          # Usa el ID del workflow que activó este trigger
+          FAILED_RUN_ID="${{ github.event.workflow_run.id }}"
           
-          echo "Runs JSON recibido:"
-          echo "$RUNS_JSON"
-          
-          # Busca el primer run fallido (método más simple y robusto)
-          FAILED_RUN_ID=$(echo "$RUNS_JSON" | python3 -c "import json, sys; data=json.load(sys.stdin); failed_runs=[run['databaseId'] for run in data if run.get('conclusion') == 'failure']; print(failed_runs[0] if failed_runs else '')")
+          echo "Workflow que falló: $FAILED_RUN_ID"
+          echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow name: ${{ github.event.workflow_run.name }}"
           
           if [ -z "$FAILED_RUN_ID" ]; then
             echo "No se encontraron fallos recientes. Saliendo."
