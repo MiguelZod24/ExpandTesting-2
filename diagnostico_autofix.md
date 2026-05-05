@@ -1,0 +1,2 @@
+Diagnóstico: El test está fallando intencionalmente debido a un assert que siempre será falso ('Este mensaje nunca aparecerá' no se encuentra en el mensaje de error 'You logged into a secure area!'). En cuanto al código, los selectores para los campos de usuario, contraseña y botón de inicio de sesión se actualizaron a un formato más robusto, utilizando IDs en vez de selectores genéricos, lo cual está en línea con las mejores prácticas para minimizar posibles fallos debidos a cambios en la estructura HTML de la página.
+Archivo: pages/login_page.py
