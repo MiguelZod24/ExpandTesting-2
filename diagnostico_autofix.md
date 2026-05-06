@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurrió porque los selectores no seguían la regla de 'Golden Rule #1', que prioriza `get_by_role` en lugar de selectores CSS/XPath. Esto provocó inconsistencias al interactuar con los elementos de la página. El código ha sido corregido para usar selectores accesibles basados en `get_by_role`, asegurando mayor confiabilidad y robustez en las interacciones del test.
+Archivo: pages/login_page.py
