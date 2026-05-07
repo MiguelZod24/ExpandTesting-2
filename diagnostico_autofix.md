@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el localizador '#flash' no se vuelve visible dentro del tiempo configurado (5 segundos). La causa principal puede ser un problema con los selectores utilizados (por ejemplo, si no coinciden con los elementos de la página) o con el tiempo necesario para que el mensaje de error aparezca. Se han ajustado los selectores para usar roles de accesibilidad y se ha asegurado que la espera explícita sea correcta en el método obtener_error.
+Archivo: pages/login_page.py
