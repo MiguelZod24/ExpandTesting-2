@@ -1,0 +1,2 @@
+Diagnóstico: El test falló debido a que el mensaje de error esperado, 'Este mensaje nunca aparecerá', no coincide con el mensaje devuelto por la página, 'You logged into a secure area!'. Además, los selectores en la implementación original son propensos a romperse, ya que dependen de atributos de CSS que no son robustos, por lo que fueron reemplazados por selectores getByRole para cumplir con las mejores prácticas.
+Archivo: pages/login_page.py
