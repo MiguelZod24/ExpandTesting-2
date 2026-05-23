@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el mensaje de verificación dentro del test no coincide con el texto real devuelto por el método 'obtener_error'. En el test, se está esperando encontrar el texto 'Este mensaje nunca aparecerá', pero el mensaje devuelto desde la página es 'You logged into a secure area!'. Este comportamiento es esperado dado que se indicó que el fallo es intencional para propósito de prueba de artefactos.
+Archivo: pages/login_page.py
