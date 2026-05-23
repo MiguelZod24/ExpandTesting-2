@@ -10,8 +10,8 @@ class LoginPage:
         self.error_message = "#flash"
 
     def navegar(self):
-        # TestDino: baseURL en config - Golden Rule #5
-        self.page.goto("/login")
+        # TestDino: baseURL activado en config - Golden Rule #5
+        self.page.goto(f"{BASE_URL}/login")
 
     # ---------- Interacción ----------
     def ingresar_usuario(self, usuario):
@@ -32,8 +32,7 @@ class LoginPage:
     def campo_vacio(self, campo):
         """Devuelve True si el campo está vacío"""
         # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
-        valor = self.page.get_attribute(campo, "value")
-        return valor == ""
+        return self.page.get_attribute(campo, "value") == ""
 
     def atributo_name(self, campo):
         """Devuelve el valor del atributo name de un input"""
@@ -43,5 +42,3 @@ class LoginPage:
         """Devuelve el valor actual del input"""
         # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         return self.page.input_value(campo)
-
-
