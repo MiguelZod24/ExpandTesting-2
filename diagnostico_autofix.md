@@ -1,0 +1,5 @@
+Diagnóstico: El error ocurre debido a que el texto de error buscado ('Este mensaje nunca aparecerá') no coincide con el elemento capturado, ya que este último contiene el texto 'You logged into a secure area!'. Esto indica que las credenciales usadas son válidas, y se logró el inicio de sesión en lugar del fallo esperado. Adicionalmente, los selectores configurados en login_page.py utilizan temporalmente 'input[name=...]' en lugar de métodos más confiables como get_by_role() para mejorar la robustez y el mantenimiento del código. En el código corregido:
+1. Los selectores han sido optimizados con el método 'get_by_role()' en lugar de depender de atributos específicos y menos confiables como 'name'.
+2. La navegación usa correctamente la variable BASE_URL para construir la URL completa, como lo indica la Golden Rule #5.
+3. Las validaciones (como el uso de errores y gestión de inputs vacíos) aplican métodos optimizados para aprovechar las capacidades de Playwright, como 'input_value()' en lugar de 'get_attribute()'.
+Archivo: pages/login_page.py
