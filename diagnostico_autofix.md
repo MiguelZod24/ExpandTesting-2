@@ -1,0 +1,2 @@
+Diagnóstico: El test falla porque el mensaje 'Este mensaje nunca aparecerá' no coincide con el texto devuelto por el selector del error. También los selectores de los elementos del LoginPage no siguen la regla de utilizar 'getByRole', lo que reduce la accesibilidad y robustez del código. En el código corregido, se ajustaron los selectores para seguir la regla 'Golden Rule #1' utilizando named roles de accesibilidad, y se mejoró la implementación de los métodos que interactúan con los campos de texto ajustándolos a los nuevos selectores.
+Archivo: pages/login_page.py
