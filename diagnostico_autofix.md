@@ -1,0 +1,2 @@
+Diagnóstico: El error surge porque el test deliberadamente busca un mensaje de error que nunca será visible al ingresar credenciales válidas ('practice' y 'SuperSecretPassword!'). Esto resulta en un assertion failure esperado. Se corrigieron algunos selectores para que sean más específicos y seguren cumplimiento de las mejores prácticas. Adicionalmente, se reemplazó el uso de `page.fill` y `page.click` con `locator.fill` y `locator.click` para prácticas más robustas y evitar problemas con elementos dinámicos.
+Archivo: pages/login_page.py
