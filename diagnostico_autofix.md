@@ -1,0 +1,2 @@
+Diagnóstico: El error en el test se debe a un assertion que está diseñado para fallar intencionalmente: 'assert "Este mensaje nunca aparecerá" in mensaje'. Por otro lado, se realizaron mejoras en los selectores para minimizar el riesgo de fallos por cambios en el DOM de la página. Se recomienda también revisar el entorno de pruebas para actualizar dependencias que podrían estar afectadas por la advertencia sobre Node.js 20 en GitHub Actions.
+Archivo: pages/login_page.py
