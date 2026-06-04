@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el test espera un mensaje de error que no coincide con el texto mostrado en la página al iniciar sesión con credenciales válidas. La implementación de los selectores también necesita ajustes para cumplir con las mejores prácticas (usando get_by_role). Se corrigió el código para reflejar un enfoque más robusto en el manejo de selectores y se mejoraron las funciones de validación para adherirse a los principios de POM. Considera revisar los casos de prueba para garantizar que las expectativas sean correctas.
+Archivo: pages/login_page.py
