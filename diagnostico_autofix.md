@@ -1,0 +1,2 @@
+Diagnóstico: El error se produjo porque los selectores de los elementos en la clase LoginPage no cumplían con la regla definida en el contexto, 'TestDino: getByRole() sobre CSS/XPath - Golden Rule #1'. Se actualizaron los selectores para usar get_by_role() en lugar de los selectores CSS temporales. Asegurando la consistencia y cumplimiento de las mejores prácticas, además de evitar posibles problemas de selector en el test.
+Archivo: pages/login_page.py
