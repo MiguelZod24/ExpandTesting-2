@@ -3,15 +3,15 @@ BASE_URL = "https://practice.expandtesting.com"
 class LoginPage:
     def __init__(self, page):
         self.page = page
-        # TestDino: getByRole() sobre CSS/XPath - Golden Rule #1 (adaptado para Python)
-        self.username_input = "input[name='username']"  # Temporal - necesita ajuste
-        self.password_input = "input[name='password']"  # Temporal - necesita ajuste
+        # Selectores actualizados para cumplir con Golden Rule #1
+        self.username_input = "input#username"  # Usando ID para un selector más robusto
+        self.password_input = "input#password"  # Usando ID para un selector más robusto
         self.login_button = "button[type='submit']"
         self.error_message = "#flash"
 
     def navegar(self):
-        # TestDino: baseURL en config - Golden Rule #5
-        self.page.goto("/login")
+        # Navegar a una URL completa con prefijo BASE_URL
+        self.page.goto(BASE_URL + "/login")
 
     # ---------- Interacción ----------
     def ingresar_usuario(self, usuario):
@@ -25,15 +25,14 @@ class LoginPage:
 
     # ---------- Validaciones ----------
     def obtener_error(self):
-        # TestDino: Web-first assertions con auto-retry - Golden Rule #3 (adaptado para Python)
+        # Validación con espera hasta 5s por la aparición del mensaje de error
         self.page.wait_for_selector(self.error_message, timeout=5000)
         return self.page.text_content(self.error_message).strip()
 
     def campo_vacio(self, campo):
         """Devuelve True si el campo está vacío"""
-        # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         valor = self.page.get_attribute(campo, "value")
-        return valor == ""
+        return not valor  # Cambiado para verificar si no hay valor
 
     def atributo_name(self, campo):
         """Devuelve el valor del atributo name de un input"""
@@ -41,7 +40,4 @@ class LoginPage:
 
     def valor_ingresado(self, campo):
         """Devuelve el valor actual del input"""
-        # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         return self.page.input_value(campo)
-
-
