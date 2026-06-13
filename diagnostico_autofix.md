@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el método 'obtener_error' utiliza un selector para identificar un mensaje de error ('#flash'). Sin embargo, en el flujo exitoso, este mensaje no está presente, ya que el ingreso fue exitoso y el usuario fue redirigido a una página segura ('/secure'). El mensaje esperado no corresponde con el resultado actual ('You logged into a secure area!'). La solución pasa por ajustar el test para que refleje el caso real o configurar un escenario donde el mensaje esperado ocurra.
+Archivo: pages/login_page.py
