@@ -1,0 +1,2 @@
+Diagnóstico: El problema radica en la verificación del mensaje esperado en el test. En la línea del test que falla, se está comparando la presencia de un texto 'Este mensaje nunca aparecerá' con un mensaje de éxito distinto ('You logged into a secure area!'). El error se da porque el contenido esperado no coincide en ningún caso con el mensaje mostrado tras un login exitoso. Además, se han actualizado los selectores dentro de LoginPage para cumplir con las mejores prácticas y utilizar métodos actualizados como locator().
+Archivo: pages/login_page.py
