@@ -1,0 +1,2 @@
+Diagnóstico: El error se debió a la forma en que se estaban utilizando los métodos para interactuar con los selectores. Playwright recomienda el uso de 'locator' en lugar de métodos como '.fill()' y '.click()' directamente. El problema principal fue que no se usaron 'locators', lo que pudo haber causado comportamientos inesperados en las interacciones y al esperar por elementos. También se corrigió el método 'navegar()' para que utilizara correctamente 'BASE_URL' para formar la URL completa.
+Archivo: pages/login_page.py
