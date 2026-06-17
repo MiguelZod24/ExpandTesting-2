@@ -1,0 +1,4 @@
+Diagnóstico: El error en el test ocurre porque el mensaje de error esperado para la validación no coincide con el mensaje real que se muestra después de un inicio de sesión exitoso. En este caso, el mensaje esperado ('Este mensaje nunca aparecerá') es claramente intencionalmente incorrecto para forzar el fallo. El mensaje real recibido ('You logged into a secure area!') sugiere que las credenciales proporcionadas son válidas y el inicio de sesión fue exitoso.
+
+La corrección no está relacionada con la implementación de la página, pero los nombres de los selectores en `LoginPage` fueron ajustados para alinearse mejor con las mejores prácticas de selección de elementos. Además, se ha corregido el uso de `goto` para construir la URL completa utilizando `BASE_URL`. Si el objetivo principal del test es validar la captura de artefactos en un fallo intencional, entonces el test está funcionando como se esperaba.
+Archivo: pages/login_page.py
