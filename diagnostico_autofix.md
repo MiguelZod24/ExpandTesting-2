@@ -1,0 +1,2 @@
+Diagnóstico: El test falla debido a un assertion intencional en la línea: `assert 'Este mensaje nunca aparecerá' in mensaje`. La prueba está diseñada para fallar con el fin de verificar la captura de artefactos (screenshots, videos y traces). El error y los artefactos generados representan el comportamiento esperado según la descripción de la prueba. No hay problema en el código proporcionado, solo en la condición intencional del caso de prueba.
+Archivo: pages/login_page.py
