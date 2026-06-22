@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque se está esperando deliberadamente que el texto 'Este mensaje nunca aparecerá' esté en el mensaje retornado después de un inicio de sesión exitoso, lo cual es imposible ya que el sistema devuelve 'You logged into a secure area!'. Esto está diseñado como un test de fallo para probar la captura de artefactos como se describe en los comentarios. Las pruebas son válidas y los métodos parecen correctos, pero se recomienda mejorar los selectores utilizando roles accesibles, como se ha modificado en el código.
+Archivo: pages/login_page.py
