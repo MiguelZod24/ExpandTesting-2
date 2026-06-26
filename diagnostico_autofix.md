@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el selector para capturar el mensaje de error ('#flash') no coincide con lo que se espera en la prueba. Además, los selectores de entrada de nombre de usuario, contraseña y el botón de login no cumplían con la regla de usar get_by_role para garantizar la accesibilidad. El código ha sido corregido para seguir las mejores prácticas de accesibilidad y para garantizar que los selectores sean menos frágiles en caso de cambios en el DOM.
+Archivo: pages/login_page.py
