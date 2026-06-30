@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el test intenta verificar un mensaje que nunca aparecerá como parte de la validación deliberada para capturar artefactos en caso de fallo. En cuanto al código, se realizó una corrección mínima para mejorar el cumplimiento de las reglas de buenas prácticas, incluyendo el manejo de selectores con `wait_for_selector` antes de realizar acciones y asegurando que las URL de navegación utilicen el `BASE_URL` configurado.
+Archivo: pages/login_page.py
