@@ -11,7 +11,7 @@ class LoginPage:
 
     def navegar(self):
         # TestDino: baseURL en config - Golden Rule #5
-        self.page.goto("/login")
+        self.page.goto(BASE_URL + "/login", timeout=60000)  # Incrementar timeout
 
     # ---------- Interacción ----------
     def ingresar_usuario(self, usuario):
@@ -43,5 +43,3 @@ class LoginPage:
         """Devuelve el valor actual del input"""
         # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         return self.page.input_value(campo)
-
-
