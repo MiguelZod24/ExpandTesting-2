@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre debido a que se compara un mensaje inalcanzable ('Este mensaje nunca aparecerá') con el mensaje de éxito ('You logged into a secure area!') que aparece al realizar un login exitoso. Además, se identificaron problemas relacionados con el uso de selectores CSS estáticos en lugar de localizadores más robustos basados en roles, lo que se corrigió en la sección 'codigo_completo_corregido'.
+Archivo: pages/login_page.py
