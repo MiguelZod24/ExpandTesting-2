@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el selector de error_message está capturando el mensaje de éxito 'You logged into a secure area!', mientras que la prueba intencionalmente espera 'Este mensaje nunca aparecerá'. Además, los selectores para los inputs y el botón login estaban definidos como strings en lugar de usar `get_by_role`, lo cual no sigue la filosofía TestDino. En este caso, los selectores fueron ajustados utilizando roles accesibles. También se corrigieron métodos para reutilizar mejor los selectores y reducir errores.
+Archivo: pages/login_page.py
