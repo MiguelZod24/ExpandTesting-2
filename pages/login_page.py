@@ -4,14 +4,14 @@ class LoginPage:
     def __init__(self, page):
         self.page = page
         # TestDino: getByRole() sobre CSS/XPath - Golden Rule #1 (adaptado para Python)
-        self.username_input = "input[name='username']"  # Temporal - necesita ajuste
-        self.password_input = "input[name='password']"  # Temporal - necesita ajuste
+        self.username_input = "input[name='username']"  # Temporal, mantener simple selector único
+        self.password_input = "input[name='password']"
         self.login_button = "button[type='submit']"
         self.error_message = "#flash"
 
     def navegar(self):
-        # TestDino: baseURL en config - Golden Rule #5
-        self.page.goto("/login")
+        # TestDino: baseURL en config - Golden Rule #5 (usar BASE_URL como root)
+        self.page.goto(f"{BASE_URL}/login")
 
     # ---------- Interacción ----------
     def ingresar_usuario(self, usuario):
@@ -43,5 +43,3 @@ class LoginPage:
         """Devuelve el valor actual del input"""
         # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         return self.page.input_value(campo)
-
-
