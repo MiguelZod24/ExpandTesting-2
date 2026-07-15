@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre por múltiples razones: 1) Los selectores de los elementos 'username' y 'password' no estaban definidos correctamente, por ello ahora se usan roles accesibles según la regla Golden Rule #1. 2) Se notó que el test realiza un assertion intencionalmente fallido. Sin embargo, debido a errores menores de testeo y configuraciones, se hace necesario ajustar los nombres más evidentes. 3) Se mejoró la navegación y validaciones eliminando posibles puntos de conflicto en el código y agregando consistencia con las reglas del POM.
+Archivo: pages/login_page.py
