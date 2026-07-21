@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque los selectores en la clase LoginPage están definidos como cadenas de CSS simples en lugar de utilizar métodos con soporte de accesibilidad como get_by_role(), lo cual viola la Golden Rule #1. También, BASE_URL no estaba siendo correctamente utilizado en la navegación. Estos problemas se resolvieron ajustando los selectores y la navegación.
+Archivo: pages/login_page.py
