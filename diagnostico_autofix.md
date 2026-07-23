@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque el test está buscando un mensaje de error que no coincide con el texto actual mostrado tras la autenticación exitosa ('You logged into a secure area!'). Para prevenir confusiones similares en el futuro, los selectores han sido mejorados para ser más robustos. Además, se corrigió un problema donde 'BASE_URL' no se estaba utilizando correctamente en el método 'navegar'.
+Archivo: pages/login_page.py

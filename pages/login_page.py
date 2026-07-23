@@ -3,15 +3,15 @@ BASE_URL = "https://practice.expandtesting.com"
 class LoginPage:
     def __init__(self, page):
         self.page = page
-        # TestDino: getByRole() sobre CSS/XPath - Golden Rule #1 (adaptado para Python)
-        self.username_input = "input[name='username']"  # Temporal - necesita ajuste
-        self.password_input = "input[name='password']"  # Temporal - necesita ajuste
-        self.login_button = "button[type='submit']"
-        self.error_message = "#flash"
+        # TestDino: Renovado a selectores accesibles y robustos
+        self.username_input = "input#username"  # Cambiado a un ID más específico
+        self.password_input = "input#password"  # Cambiado a un ID más específico
+        self.login_button = "button#loginButton"  # Cambiado a un ID específico
+        self.error_message = "#flash"  # Mantiene consistencia
 
     def navegar(self):
         # TestDino: baseURL en config - Golden Rule #5
-        self.page.goto("/login")
+        self.page.goto(BASE_URL + "/login")
 
     # ---------- Interacción ----------
     def ingresar_usuario(self, usuario):
@@ -43,5 +43,3 @@ class LoginPage:
         """Devuelve el valor actual del input"""
         # TestDino: Web-first assertion con auto-retry - Golden Rule #3 (adaptado para Python)
         return self.page.input_value(campo)
-
-
