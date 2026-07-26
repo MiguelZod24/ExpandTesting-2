@@ -1,0 +1,2 @@
+Diagnóstico: El error ocurre porque los selectores para los campos de entrada y el botón de login utilizaban rutas CSS estáticas (`input[name='username']`, etc.), en lugar de selectores accesibles `getByRole` que son más robustos y dinámicos. Esto ocasiona fragilidad frente a cambios en el HTML. La solución implementada ajusta los selectores a `getByRole` para garantizar accesibilidad y compatibilidad, evitando dependencias en cambios menores en los atributos HTML.
+Archivo: pages/login_page.py
