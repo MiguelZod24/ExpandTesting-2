@@ -1,0 +1,2 @@
+Diagnóstico: El error en el test ocurre porque el mensaje esperado ('Este mensaje nunca aparecerá') no se encuentra en el mensaje devuelto por el método obtener_error(). Esto se debe a que se está verificando un caso deliberado para hacer fallar el test y capturar artefactos como trazas, capturas de pantalla y vídeos. El código y la lógica de la clase LoginPage no tienen problemas técnicos relacionados con el fallo intencionado reportado.
+Archivo: pages/login_page.py
